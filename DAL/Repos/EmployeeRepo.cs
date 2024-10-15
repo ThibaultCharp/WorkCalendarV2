@@ -1,0 +1,15 @@
+﻿using LogicLayer.IRepos;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DAL.Repos
+{
+    public class EmployeeRepo : IEmployeeRepo
+    {
+        dbConnection connection = new dbConnection();
+
+    }
+}
