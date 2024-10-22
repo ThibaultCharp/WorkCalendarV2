@@ -11,6 +11,7 @@ namespace LogicLayer.Classes
     public class ActivityService
     {
         private readonly IActivityRepo repository;
+
         public ActivityService(IActivityRepo activityRepo)
         {
             repository = activityRepo;
@@ -20,5 +21,11 @@ namespace LogicLayer.Classes
         {
             return repository.GetAllActivitiesPerEmployee();
         }
+
+        public void CreateActivity (Activity activity) 
+        {
+            repository.CreateActivity(activity);
+        }
+
     }
 }

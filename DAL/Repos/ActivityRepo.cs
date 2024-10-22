@@ -13,10 +13,45 @@ namespace DAL.Repos
     public class ActivityRepo : IActivityRepo
     {
         dbConnection dbConnection = new dbConnection();
+
+        public void CreateActivity(Activity activity)
+        {
+            string query = "INSERT INTO `activities` (`title`, `begintime`, `endtime`, `date`, `employee_id`) " +
+                "VALUES (@title, @bigintime, @endtime, @date, @employee_id);";
+            try
+            {
+                if (dbConnection.OpenConnection())
+                {
+                    using (var command = new MySqlCommand(query, dbConnection.connection))
+                    {
+                        command.Parameters.AddWithValue("@title", activity.title);
+                        command.Parameters.AddWithValue("@bigintime", activity.begintime);
+                        command.Parameters.AddWithValue("@endtime", activity.endtime);
+                        command.Parameters.AddWithValue("@date", activity.date);
+                        command.Parameters.AddWithValue("@employee_id", activity.employee.id);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex);
+            }
+            finally
+            {
+                dbConnection.CloseConnection();
+            }
+        }
+
+
+
         public List<Activity> GetAllActivitiesPerEmployee()
         {
             List<Activity> activities = new List<Activity>();
-            string query = "SELECT * FROM activities WHERE employee_id = 1";
+            string query = "SELECT activities.* FROM activities " +
+                "JOIN employees ON activities.employee_id = employees.id " +
+                "WHERE employees.user_id = 'auth0|66f504d68901fee18cf7f394'";
 
             try
             {

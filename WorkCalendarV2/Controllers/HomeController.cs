@@ -15,7 +15,7 @@ namespace WorkCalendarV2.Controllers
 
         public IActionResult Index()
         {
-            return Json("Go to Employee/GetAllEmployeesPerEmployer");
+            return Json("Go to Activity/GetAllActivitiesPerEmployee");
         }
 
         public IActionResult Privacy()

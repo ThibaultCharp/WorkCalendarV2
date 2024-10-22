@@ -10,5 +10,6 @@ namespace LogicLayer.IRepos
     public interface IActivityRepo
     {
         List<Activity> GetAllActivitiesPerEmployee();
+        void CreateActivity(Activity activity);
     }
 }

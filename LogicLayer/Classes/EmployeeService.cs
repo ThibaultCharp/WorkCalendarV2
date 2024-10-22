@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LogicLayer.Entitys;
+using LogicLayer.IRepos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +10,16 @@ namespace LogicLayer.Classes
 {
     public class EmployeeService
     {
+        private readonly IEmployeeRepo repository;
+
+        public EmployeeService(IEmployeeRepo employeeRepo)
+        {
+            repository = employeeRepo;
+        }
+
+        public List<Employee> GetAllEmployeesPerEmployer()
+        {
+            return repository.GetAllemployeesPerEmployer();
+        }
     }
 }
