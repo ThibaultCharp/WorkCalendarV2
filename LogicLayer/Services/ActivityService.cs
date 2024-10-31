@@ -22,9 +22,14 @@ namespace LogicLayer.Classes
             return repository.GetAllActivitiesPerEmployee();
         }
 
-        public void CreateActivity (Activity activity) 
+        public void CreateActivity (string position, string begintime, string endtime, string date, int employee_id) 
         {
-            repository.CreateActivity(activity);
+            repository.CreateActivity(position, begintime, endtime, date, employee_id);
+        }
+
+        public void EditActivity (string position, string begintime, string endtime, string date)
+        {
+
         }
 
     }
