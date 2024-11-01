@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mysqlx.Crud;
 
 namespace DAL.Repos
 {
@@ -44,10 +45,35 @@ namespace DAL.Repos
             }
         }
 
-        public void EditActivity(string position, string begintime, string endtime, string date)
+        public void UpdateActivity(int id, string position, string begintime, string endtime, string date, string employer_name, string employer_email)
         {
-            string query = "INSERT INTO `activities` (`title`, `begintime`, `endtime`, `date`, `employee_id`) " +
-               "VALUES (@title, @bigintime, @endtime, @date, @employee_id);";
+            string query =  "UPDATE `activities` SET `title` = @title, `begintime` = @begintime, `endtime` = @endtime, `date` = @date WHERE `id` = @id;";
+
+            try
+            {
+                if (dbConnection.OpenConnection())
+                {
+                    using (var command = new MySqlCommand(query, dbConnection.connection))
+                    {
+                        // Bind parameters to avoid SQL injection
+                        command.Parameters.AddWithValue("@title", position);
+                        command.Parameters.AddWithValue("@begintime", begintime);
+                        command.Parameters.AddWithValue("@endtime", endtime);
+                        command.Parameters.AddWithValue("@date", date);
+                        command.Parameters.AddWithValue("@id", id);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred while updating the activity: " + ex.Message);
+            }
+            finally
+            {
+                dbConnection.CloseConnection();
+            }
         }
 
         public List<Activity> GetAllActivitiesPerEmployee()
@@ -78,7 +104,7 @@ namespace DAL.Repos
                             {
                                 Activity activity = new Activity();
                                 activity.id = Convert.ToInt32(reader["id"]);
-                                activity.title = reader["title"].ToString();
+                                activity.   position = reader["title"].ToString();
                                 activity.date = reader.GetDateTime(reader.GetOrdinal("date"));
                                 activity.begintime = TimeOnly.FromTimeSpan(reader.GetTimeSpan(reader.GetOrdinal("begintime")));
                                 activity.endtime = TimeOnly.FromTimeSpan(reader.GetTimeSpan(reader.GetOrdinal("endtime")));

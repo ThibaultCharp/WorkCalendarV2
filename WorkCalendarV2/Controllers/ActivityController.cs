@@ -43,12 +43,33 @@ namespace WorkCalendarV2.Controllers
         }
 
 
-        [HttpPost("EditActivity")]
-        public IActionResult EditActivity([FromBody] EditActivityRequest request)
+        [HttpPut("UpdateActivity")]
+        public ActionResult UpdateActivity(int id, [FromBody] UpdateActivityRequest request)
         {
-            activityService.EditActivity(request.position, request.begintime, request.endtime, request.date);
-            return new JsonResult("Done");
-        }
+            if (request == null)
+            {
+                return BadRequest("Activity data is null.");
+            }
 
+            try
+            {
+                activityService.UpdateActivity(
+                    id, 
+                    request.position, 
+                    request.begintime, 
+                    request.endtime, 
+                    request.date,
+                    request.employer_name,
+                    request.employer_email
+                );
+                
+                return Ok("Activity updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while updating activity: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }   

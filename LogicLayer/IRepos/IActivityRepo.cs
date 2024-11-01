@@ -11,5 +11,6 @@ namespace LogicLayer.IRepos
     {
         List<Activity> GetAllActivitiesPerEmployee();
         void CreateActivity(string position, string begintime, string endtime, string date, int employee_id);
+        void UpdateActivity(int id, string position, string begintime, string endtime, string date, string employer_name, string employer_email);
     }
 }

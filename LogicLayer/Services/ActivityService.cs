@@ -27,10 +27,9 @@ namespace LogicLayer.Classes
             repository.CreateActivity(position, begintime, endtime, date, employee_id);
         }
 
-        public void EditActivity (string position, string begintime, string endtime, string date)
+        public void UpdateActivity(int id, string position, string begintime, string endtime, string date, string employer_name, string employer_email)
         {
-
+            repository.UpdateActivity(id, position, begintime, endtime, date, employer_name, employer_email);
         }
-
     }
 }
