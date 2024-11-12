@@ -7,14 +7,18 @@ using WorkCalendarV2.Models;
 
 namespace WorkCalendarV2.Controllers
 {
-    public class EmployeeController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+
+    public class EmployeeController : ControllerBase
     {
         EmployeeService employeeService = new EmployeeService(new EmployeeRepo());
 
+        [HttpGet("GetAllEmployeesPerEmployer")]
         public IActionResult GetAllEmployeesPerEmployer()
         {
             List<Employee> employees = employeeService.GetAllEmployeesPerEmployer();
-            return Json(employees);
+            return new JsonResult(employees);
         }
     }
 }

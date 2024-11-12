@@ -2,7 +2,7 @@
 {
     public class CreateActivityRequest
     {
-        public string position { get; set; }
+        public int position_id { get; set; }
         public string begintime { get; set; }
         public string endtime { get; set; }
         public string date { get; set; }

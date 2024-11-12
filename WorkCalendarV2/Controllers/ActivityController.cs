@@ -27,10 +27,16 @@ namespace WorkCalendarV2.Controllers
             activityService = new ActivityService(new ActivityRepo());
         }
 
-        [HttpGet("GetAllActivitiesPerEmployee")]
-        public IActionResult GetAllActivitiesPerEmployee()
+        [HttpGet("GetActivitiesForCurrentUser")]
+        public IActionResult GetActivitiesForCurrentUser([FromQuery] string userId)
         {
-            List<LogicLayer.Entitys.Activity> activities = activityService.GetAllActivitiesPerEmployee();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("User ID is required.");
+            }
+
+            // Call the service to retrieve activities for the given userId
+            var activities = activityService.GetActivitiesByUserId(userId);
             return new JsonResult(activities);
         }
 
@@ -38,7 +44,7 @@ namespace WorkCalendarV2.Controllers
         public IActionResult CreateActivity([FromBody] CreateActivityRequest request)
         {
             Console.WriteLine("CreateActivity hit");
-            activityService.CreateActivity(request.position, request.begintime, request.endtime, request.date, request.employee_id);
+            activityService.CreateActivity(request.position_id, request.begintime, request.endtime, request.date, request.employee_id);
             return new JsonResult("Activity created");
         }
 

@@ -17,14 +17,14 @@ namespace LogicLayer.Classes
             repository = activityRepo;
         }
 
-        public List<Activity> GetAllActivitiesPerEmployee() 
+        public List<Activity> GetActivitiesByUserId(string userId)
         {
-            return repository.GetAllActivitiesPerEmployee();
+            return repository.GetActivitiesByUserId(userId);
         }
 
-        public void CreateActivity (string position, string begintime, string endtime, string date, int employee_id) 
+        public void CreateActivity (int position_id, string begintime, string endtime, string date, int employee_id) 
         {
-            repository.CreateActivity(position, begintime, endtime, date, employee_id);
+            repository.CreateActivity(position_id, begintime, endtime, date, employee_id);
         }
 
         public void UpdateActivity(int id, string position, string begintime, string endtime, string date, string employer_name, string employer_email)

@@ -15,17 +15,17 @@ namespace DAL.Repos
     {
         dbConnection dbConnection = new dbConnection();
 
-        public void CreateActivity(string position, string begintime, string endtime, string date, int employee_id)
+        public void CreateActivity(int position_id, string begintime, string endtime, string date, int employee_id)
         {
-            string query = "INSERT INTO `activities` (`title`, `begintime`, `endtime`, `date`, `employee_id`) " +
-                "VALUES (@title, @bigintime, @endtime, @date, @employee_id);";
+            string query = "INSERT INTO `activities` (`begintime`, `endtime`, `date`, `employee_id`, `position_id`) " +
+                "VALUES (@bigintime, @endtime, @date, @employee_id, @position_id);";
             try
             {
                 if (dbConnection.OpenConnection())
                 {
                     using (var command = new MySqlCommand(query, dbConnection.connection))
                     {
-                        command.Parameters.AddWithValue("@title", position);
+                        command.Parameters.AddWithValue("@position_id", position_id);
                         command.Parameters.AddWithValue("@bigintime", begintime);
                         command.Parameters.AddWithValue("@endtime", endtime);
                         command.Parameters.AddWithValue("@date", date);
@@ -76,21 +76,24 @@ namespace DAL.Repos
             }
         }
 
-        public List<Activity> GetAllActivitiesPerEmployee()
+        public List<Activity> GetActivitiesByUserId(string userId)
         {
             List<Activity> activities = new List<Activity>();
             string query = @"
-            SELECT 
-                activities.*,
-                employees.id AS employee_id, 
-                users.id AS user_id, users.name AS user_name, users.email AS user_email, 
-                employers.id AS employer_id, employer_user.id AS employer_user_id, employer_user.name AS employer_user_name, employer_user.email AS employer_user_email
-            FROM activities
-            JOIN employees ON activities.employee_id = employees.id
-            JOIN users ON employees.user_id = users.id
-            JOIN employers ON employees.employer_id = employers.id
-            JOIN users AS employer_user ON employers.user_id = employer_user.id
-            WHERE employees.user_id = 'auth0|66e98737bc35834952224650'";
+                    SELECT 
+                        activities.*,
+                        employees.id AS employee_id, 
+                        users.id AS user_id, users.name AS user_name, users.email AS user_email, 
+                        employers.id AS employer_id, employer_user.id AS employer_user_id, employer_user.name AS employer_user_name, employer_user.email AS employer_user_email,
+                        positions.name AS position_name
+                    FROM activities
+                    JOIN employees ON activities.employee_id = employees.id
+                    JOIN users ON employees.user_id = users.id
+                    JOIN employers ON employees.employer_id = employers.id
+                    JOIN users AS employer_user ON employers.user_id = employer_user.id
+                    JOIN positions ON activities.position_id = positions.id
+                    WHERE employees.user_id = @userId
+                    ORDER BY activities.date ASC";
 
             try
             {
@@ -98,13 +101,15 @@ namespace DAL.Repos
                 {
                     using (var command = new MySqlCommand(query, dbConnection.connection))
                     {
+                        // Replace the placeholder @userId with the actual user ID from the parameter
+                        command.Parameters.AddWithValue("@userId", userId);
+
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
                             {
                                 Activity activity = new Activity();
                                 activity.id = Convert.ToInt32(reader["id"]);
-                                activity.   position = reader["title"].ToString();
                                 activity.date = reader.GetDateTime(reader.GetOrdinal("date"));
                                 activity.begintime = TimeOnly.FromTimeSpan(reader.GetTimeSpan(reader.GetOrdinal("begintime")));
                                 activity.endtime = TimeOnly.FromTimeSpan(reader.GetTimeSpan(reader.GetOrdinal("endtime")));
@@ -112,6 +117,11 @@ namespace DAL.Repos
                                 // Employee info
                                 activity.employee = new Employee();
                                 activity.employee.id = Convert.ToInt32(reader["employee_id"]);
+
+                                // Position info
+                                activity.position = new Position();
+                                activity.position.name = reader["position_name"].ToString();
+                                activity.position.id = Convert.ToInt32(reader["position_id"]);
 
                                 // Employee's user info
                                 activity.employee.user = new User();
@@ -146,6 +156,7 @@ namespace DAL.Repos
 
             return activities;
         }
+
 
     }
 }
