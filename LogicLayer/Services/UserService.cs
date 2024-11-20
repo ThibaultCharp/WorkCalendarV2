@@ -23,5 +23,15 @@ namespace LogicLayer.Classes
                 Console.WriteLine("User already exists, no action taken.");
             }
         }
+
+        public List<User> GetAllUsersWithoutEmployer()
+        {
+            return repository.GetAllEmployeesWithoutEmployer();
+        }
+
+        public void LinkUser (string loggedInUserId, string targetUserId)
+        {
+
+        }
     }
 }

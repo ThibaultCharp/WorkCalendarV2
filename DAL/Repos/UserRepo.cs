@@ -14,7 +14,7 @@ namespace DAL.Repos
         dbConnection dbConnection = new dbConnection();
 
 
-        public bool UserExists(string userId)
+        public bool UserExists(int userId)
         {
             string query = "SELECT COUNT(1) FROM users WHERE id = @userId";
             bool exists = false;
@@ -83,10 +83,13 @@ namespace DAL.Repos
         }
 
 
-        public List<User> GetAllUsers()
+        public List<User> GetAllEmployeesWithoutEmployer()
         {
             List<User> users = new List<User>();
-            string query = "SELECT users.id FROM users";
+            string query = "SELECT users.id, users.name, users.email " +
+                           "FROM users " +
+                           "JOIN employees ON users.id = employees.user_id " +
+                           "WHERE employees.employer_id IS NULL";
 
             try
             {
@@ -96,10 +99,14 @@ namespace DAL.Repos
                     {
                         using (var reader = command.ExecuteReader())
                         {
-                            while (reader.Read()) 
+                            while (reader.Read())
                             {
-                                User user = new User();
-                                user.id = reader["id"].ToString();
+                                User user = new User
+                                {
+                                    id = Convert.ToInt32(reader["id"]),
+                                    name = reader["name"].ToString(),
+                                    email = reader["email"].ToString()
+                                };
 
                                 users.Add(user);
                             }
@@ -107,7 +114,6 @@ namespace DAL.Repos
                     }
                 }
             }
-
             catch (Exception ex)
             {
                 Console.WriteLine("An error occurred: " + ex.Message);
@@ -119,6 +125,7 @@ namespace DAL.Repos
 
             return users;
         }
+
 
     }
 }

@@ -6,13 +6,13 @@ using WorkCalendarV2.Models;
 using LogicLayer.IRepos;
 using LogicLayer.Entitys;
 using WorkCalendarV2.Requests;
+using LogicLayer.Services;
 
 
 namespace WorkCalendarV2.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
 
 
     public class UserController : ControllerBase
@@ -34,5 +34,20 @@ namespace WorkCalendarV2.Controllers
             userService.CreateUserIfNotExisting(user);
             return new JsonResult("User creation attempt complete");
         }
+
+        [HttpGet("GetAllAvailableUsers")]
+        public IActionResult GetAllAvailableUsers()
+        {
+            List<User> users = userService.GetAllUsersWithoutEmployer();
+            return new JsonResult(users);
+        }
+
+
+
+        //[HttpPut("LinkUser")]
+        //public IActionResult LinkUserToEmployer(string loggedInUserId, string targetUserId) 
+        //{
+
+        //}
     }
 }

@@ -9,7 +9,7 @@ namespace LogicLayer.IRepos
 {
     public interface IActivityRepo
     {
-        List<Activity> GetActivitiesByUserId(string userId);
+        List<Activity> GetActivitiesByUserId(int userId);
         void CreateActivity(int position_id, string begintime, string endtime, string date, int employee_id);
         void UpdateActivity(int id, string position, string begintime, string endtime, string date, string employer_name, string employer_email);
     }

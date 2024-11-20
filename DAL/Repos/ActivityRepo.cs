@@ -76,7 +76,7 @@ namespace DAL.Repos
             }
         }
 
-        public List<Activity> GetActivitiesByUserId(string userId)
+        public List<Activity> GetActivitiesByUserId(int userId)
         {
             List<Activity> activities = new List<Activity>();
             string query = @"
@@ -125,7 +125,7 @@ namespace DAL.Repos
 
                                 // Employee's user info
                                 activity.employee.user = new User();
-                                activity.employee.user.id = reader["user_id"].ToString();
+                                activity.employee.user.id = Convert.ToInt32(reader["user_id"]);
                                 activity.employee.user.name = reader["user_name"].ToString();
                                 activity.employee.user.email = reader["user_email"].ToString();
 
@@ -135,7 +135,7 @@ namespace DAL.Repos
 
                                 // Employer's user info
                                 activity.employee.employer.user = new User();
-                                activity.employee.employer.user.id = reader["employer_user_id"].ToString();
+                                activity.employee.employer.user.id = Convert.ToInt32(reader["employer_user_id"]);
                                 activity.employee.employer.user.name = reader["employer_user_name"].ToString();
                                 activity.employee.employer.user.email = reader["employer_user_email"].ToString();
 

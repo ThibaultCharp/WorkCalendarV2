@@ -9,8 +9,8 @@ namespace LogicLayer.IRepos
 {
     public interface IUserRepo
     {
-        bool UserExists(string userId);
+        bool UserExists(int userId);
         void CreateUser(User user);
-        List<User> GetAllUsers();
+        List<User> GetAllEmployeesWithoutEmployer();
     }
 }

@@ -42,7 +42,7 @@ namespace DAL.Repos
 
                                 // Map the employee's user
                                 employee.user = new User();
-                                employee.user.id = reader["user_id"].ToString();
+                                employee.user.id = Convert.ToInt32(reader["user_id"]);
                                 employee.user.name = reader["employee_name"].ToString();
                                 employee.user.email = reader["employee_email"].ToString();
 
@@ -51,7 +51,7 @@ namespace DAL.Repos
                                 employee.employer.id = Convert.ToInt32(reader["employer_id"]);
 
                                 employee.employer.user = new User();
-                                employee.employer.user.id = reader["employer_user_id"].ToString();
+                                employee.employer.user.id = Convert.ToInt32(reader["employer_user_id"]);
                                 employee.employer.user.name = reader["employer_name"].ToString();
                                 employee.employer.user.email = reader["employer_email"].ToString();
 

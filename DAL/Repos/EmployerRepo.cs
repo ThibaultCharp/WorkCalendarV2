@@ -32,7 +32,7 @@ namespace DAL.Repos
                                 Employer employer = new Employer();
                                 employer.id = Convert.ToInt32(reader["id"]);
                                 employer.user = new User();
-                                employer.user.id = reader["user_id"].ToString();
+                                employer.user.id = Convert.ToInt32(reader["user_id"]);
 
                                 employers.Add(employer);
                             }

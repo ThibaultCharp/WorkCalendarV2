@@ -17,7 +17,7 @@ namespace LogicLayer.Classes
             repository = activityRepo;
         }
 
-        public List<Activity> GetActivitiesByUserId(string userId)
+        public List<Activity> GetActivitiesByUserId(int userId)
         {
             return repository.GetActivitiesByUserId(userId);
         }

@@ -23,7 +23,7 @@ namespace DAL
         {
 
             string connectionString;
-            connectionString = "Server = 127.0.0.1; Uid = root; Database = db_workcalendarV2; Password = root;";
+            connectionString = "Server = 127.0.0.1; Uid = root; Database = workcalendar_db; Password = root;";
 
             connection = new MySqlConnection(connectionString);
         }
