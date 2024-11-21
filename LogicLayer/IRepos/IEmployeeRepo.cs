@@ -10,6 +10,6 @@ namespace LogicLayer.IRepos
 {
     public interface IEmployeeRepo
     {
-        List<Employee> GetAllemployeesPerEmployer();
+        List<Employee> GetAllemployeesPerEmployer(string email);
     }
 }

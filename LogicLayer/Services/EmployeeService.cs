@@ -2,6 +2,7 @@
 using LogicLayer.IRepos;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,9 +18,10 @@ namespace LogicLayer.Classes
             repository = employeeRepo;
         }
 
-        public List<Employee> GetAllEmployeesPerEmployer()
+        public List<Employee> GetAllEmployeesPerEmployer(string email)
         {
-            return repository.GetAllemployeesPerEmployer();
+            Console.WriteLine("Service: Fetching employees for email: " + email);
+            return repository.GetAllemployeesPerEmployer(email);
         }
     }
 }

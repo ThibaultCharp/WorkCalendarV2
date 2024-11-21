@@ -82,7 +82,7 @@ namespace LogicLayer.Services
                 issuer: _configuration["Jwt:Issuer"],  // Access configuration for issuer
                 audience: _configuration["Jwt:Audience"],  // Access configuration for audience
                 claims: claims,
-                expires: DateTime.Now.AddHours(1), // Token expiration time (e.g., 1 hour)
+                expires: DateTime.Now.AddMinutes(1), // Token expiration time (e.g., 1 hour)
                 signingCredentials: creds
             );
 

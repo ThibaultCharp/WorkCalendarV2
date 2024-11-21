@@ -15,9 +15,11 @@ namespace WorkCalendarV2.Controllers
         EmployeeService employeeService = new EmployeeService(new EmployeeRepo());
 
         [HttpGet("GetAllEmployeesPerEmployer")]
-        public IActionResult GetAllEmployeesPerEmployer()
+        public IActionResult GetAllEmployeesPerEmployer([FromQuery] string email)
         {
-            List<Employee> employees = employeeService.GetAllEmployeesPerEmployer();
+            Console.WriteLine("Controller: Received request with email: " + email);
+            List<Employee> employees = employeeService.GetAllEmployeesPerEmployer(email);
+            Console.WriteLine("Controller: Returning response with " + employees.Count + " employees.");
             return new JsonResult(employees);
         }
     }

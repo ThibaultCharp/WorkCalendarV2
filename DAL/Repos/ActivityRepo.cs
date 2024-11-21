@@ -76,24 +76,24 @@ namespace DAL.Repos
             }
         }
 
-        public List<Activity> GetActivitiesByUserId(int userId)
+        public List<Activity> GetActivitiesByUserEmail(string email)
         {
             List<Activity> activities = new List<Activity>();
             string query = @"
-                    SELECT 
-                        activities.*,
-                        employees.id AS employee_id, 
-                        users.id AS user_id, users.name AS user_name, users.email AS user_email, 
-                        employers.id AS employer_id, employer_user.id AS employer_user_id, employer_user.name AS employer_user_name, employer_user.email AS employer_user_email,
-                        positions.name AS position_name
-                    FROM activities
-                    JOIN employees ON activities.employee_id = employees.id
-                    JOIN users ON employees.user_id = users.id
-                    JOIN employers ON employees.employer_id = employers.id
-                    JOIN users AS employer_user ON employers.user_id = employer_user.id
-                    JOIN positions ON activities.position_id = positions.id
-                    WHERE employees.user_id = @userId
-                    ORDER BY activities.date ASC";
+        SELECT 
+            activities.*,
+            employees.id AS employee_id, 
+            users.id AS user_id, users.name AS user_name, users.email AS user_email, 
+            employers.id AS employer_id, employer_user.id AS employer_user_id, employer_user.name AS employer_user_name, employer_user.email AS employer_user_email,
+            positions.name AS position_name
+        FROM activities
+        JOIN employees ON activities.employee_id = employees.id
+        JOIN users ON employees.user_id = users.id
+        JOIN employers ON employees.employer_id = employers.id
+        JOIN users AS employer_user ON employers.user_id = employer_user.id
+        JOIN positions ON activities.position_id = positions.id
+        WHERE users.email = @Email
+        ORDER BY activities.date ASC";
 
             try
             {
@@ -101,8 +101,8 @@ namespace DAL.Repos
                 {
                     using (var command = new MySqlCommand(query, dbConnection.connection))
                     {
-                        // Replace the placeholder @userId with the actual user ID from the parameter
-                        command.Parameters.AddWithValue("@userId", userId);
+                        
+                        command.Parameters.AddWithValue("@Email", email);
 
                         using (var reader = command.ExecuteReader())
                         {

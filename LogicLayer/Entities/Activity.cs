@@ -10,7 +10,6 @@ namespace LogicLayer.Entitys
     public class Activity
     {
         public int id { get; set; }
-        
         public TimeOnly begintime { get; set; }
         public TimeOnly endtime { get; set; }
         public DateTime date { get; set; }

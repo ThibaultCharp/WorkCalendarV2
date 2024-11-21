@@ -29,9 +29,9 @@ namespace LogicLayer.Tests
             });
         }
 
-        public List<Activity> GetActivitiesByUserId(int userId)
+        public List<Activity> GetActivitiesByUserEmail(string userId)
         {
-            return _activities.Where(a => a.employee.user.id == userId).ToList();
+            return _activities;
         }
 
 

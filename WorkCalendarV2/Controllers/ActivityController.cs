@@ -28,23 +28,24 @@ namespace WorkCalendarV2.Controllers
         }
 
         [HttpGet("GetActivitiesForCurrentUser")]
-        public IActionResult GetActivitiesForCurrentUser([FromQuery] int? userId)
-        {
-            if (!userId.HasValue || userId <= 0)
+        public IActionResult GetActivitiesForCurrentUser([FromQuery] string email)
+         {
+            if (string.IsNullOrWhiteSpace(email))
             {
-                return BadRequest("Valid User ID is required.");
+                return BadRequest("Valid email is required.");
             }
 
-            // Call the service to retrieve activities for the given userId
-            var activities = activityService.GetActivitiesByUserId(userId.Value);
+            // Call the service to retrieve activities for the given email
+            var activities = activityService.GetActivitiesByEmail(email);
 
             if (activities == null || !activities.Any())
             {
-                return NotFound("No activities found for the given User ID.");
+                return NotFound("No activities found for the given email.");
             }
 
             return Ok(activities);
         }
+
 
         [HttpPost("CreateActivity")]
         public IActionResult CreateActivity([FromBody] CreateActivityRequest request)

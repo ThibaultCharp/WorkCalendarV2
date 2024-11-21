@@ -18,10 +18,10 @@ namespace LogicLayer.UnitTests
 
             // Arrange
             ActivityService activityService = new ActivityService(new FakeActivityRepo());
-            int userId = 1;
+            string userId = "sasxc";
 
             // Act
-            var activities = activityService.GetActivitiesByUserId(userId);
+            var activities = activityService.GetActivitiesByEmail(userId);
 
             // Assert
             Assert.AreEqual(1, activities.Count);
@@ -48,7 +48,7 @@ namespace LogicLayer.UnitTests
             activityService.UpdateActivity(activityId, newPosition, newBeginTime, newEndTime, newDate, newEmployerName, newEmployerEmail);
 
             // Assert
-            var updatedActivity = activityService.GetActivitiesByUserId(1).First();
+            var updatedActivity = activityService.GetActivitiesByEmail("ew").First();
             Assert.AreEqual("Senior Developer", updatedActivity.position.name);
             Assert.AreEqual(TimeOnly.Parse(newBeginTime), updatedActivity.begintime);
             Assert.AreEqual("updated@example.com", updatedActivity.employee.employer.user.email);

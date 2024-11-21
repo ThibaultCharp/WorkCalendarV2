@@ -25,7 +25,7 @@ namespace WorkCalendarV2.Controllers
             try
             {
                 _authService.RegisterUser(request.name, request.email, request.password, request.roleId);
-                return Ok("User registered successfully.");
+                return new JsonResult("User registered successfully.");
             }
             catch (Exception ex)
             {
@@ -43,7 +43,7 @@ namespace WorkCalendarV2.Controllers
                 return Unauthorized("Invalid email or password.");
             }
 
-            return Ok(new { token });
+            return new JsonResult(new { token });
         }
     }
 }
