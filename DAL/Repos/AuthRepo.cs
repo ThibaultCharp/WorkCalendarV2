@@ -47,20 +47,42 @@ namespace DAL.Repos
 
         public void AddUser(User user)
         {
-            string query = @"
+            string userQuery = @"
                 INSERT INTO Users (name, email, password, role_Id)
-                VALUES (@Name, @Email, @Password, NULL)";
+                VALUES (@Name, @Email, @Password, 3)";
+            string employeeQuery = @"
+                INSERT INTO Employees (user_id)
+                VALUES ((SELECT id FROM Users WHERE email = @Email))";
+
             try
             {
                 if (_dbConnection.OpenConnection())
                 {
-                    using (var command = new MySqlCommand(query, _dbConnection.connection))
+                    using (var transaction = _dbConnection.connection.BeginTransaction())
                     {
-                        command.Parameters.AddWithValue("@Name", user.name);
-                        command.Parameters.AddWithValue("@Email", user.email);
-                        command.Parameters.AddWithValue("@Password", user.password);
+                        try
+                        {
+                            using (var userCommand = new MySqlCommand(userQuery, _dbConnection.connection, transaction))
+                            {
+                                userCommand.Parameters.AddWithValue("@Name", user.name);
+                                userCommand.Parameters.AddWithValue("@Email", user.email);
+                                userCommand.Parameters.AddWithValue("@Password", user.password);
+                                userCommand.ExecuteNonQuery();
+                            }
 
-                        command.ExecuteNonQuery();
+                            using (var employeeCommand = new MySqlCommand(employeeQuery, _dbConnection.connection, transaction))
+                            {
+                                employeeCommand.Parameters.AddWithValue("@Email", user.email);
+                                employeeCommand.ExecuteNonQuery();
+                            }
+
+                            transaction.Commit();
+                        }
+                        catch
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
                     }
                 }
             }

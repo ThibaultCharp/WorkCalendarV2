@@ -7,6 +7,8 @@ using LogicLayer.IRepos;
 using LogicLayer.Entitys;
 using WorkCalendarV2.Requests;
 using LogicLayer.Services;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 
 namespace WorkCalendarV2.Controllers
@@ -42,6 +44,26 @@ namespace WorkCalendarV2.Controllers
             return new JsonResult(users);
         }
 
+
+
+        [HttpGet("GetCurrentUser")]
+        [Authorize]
+        public IActionResult GetCurrentUser()
+        {
+            // Extract claims from the token
+            var email = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Email)?.Value;
+            var name = User.Claims.FirstOrDefault(b => b.Type == ClaimTypes.Name)?.Value;
+            var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+            // Check if email is present (basic validation)
+            if (string.IsNullOrEmpty(email))
+            {
+                return Unauthorized("Email not found in token.");
+            }
+
+            // Return the extracted information
+            return Ok(new { name, email, role });
+        }
 
 
         //[HttpPut("LinkUser")]

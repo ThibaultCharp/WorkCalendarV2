@@ -6,6 +6,8 @@ using WorkCalendarV2.Models;
 using LogicLayer.IRepos;
 using LogicLayer.Entitys;
 using WorkCalendarV2.Requests;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 
 namespace WorkCalendarV2.Controllers
@@ -28,22 +30,18 @@ namespace WorkCalendarV2.Controllers
         }
 
         [HttpGet("GetActivitiesForCurrentUser")]
-        public IActionResult GetActivitiesForCurrentUser([FromQuery] string email)
+        [Authorize]
+        public IActionResult GetActivitiesForCurrentUser()
          {
-            if (string.IsNullOrWhiteSpace(email))
+            var email = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Email)?.Value;
+            var name = User.Claims.FirstOrDefault(b => b.Type == ClaimTypes.Name)?.Value;
+            var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            if (string.IsNullOrEmpty(email))
             {
-                return BadRequest("Valid email is required.");
+                return Unauthorized("Email not found in token.");
             }
-
-            // Call the service to retrieve activities for the given email
-            var activities = activityService.GetActivitiesByEmail(email);
-
-            if (activities == null || !activities.Any())
-            {
-                return NotFound("No activities found for the given email.");
-            }
-
-            return Ok(activities);
+            List<LogicLayer.Entitys.Activity> activities = activityService.GetActivitiesByEmail(email);
+            return new JsonResult(new { activities, name, role });
         }
 
 

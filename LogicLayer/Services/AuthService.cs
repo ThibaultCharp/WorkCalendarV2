@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using LogicLayer.Entitys;
+using System.Security.Claims;
 
 namespace LogicLayer.Services
 {
@@ -19,7 +20,7 @@ namespace LogicLayer.Services
             _configuration = configuration;
         }
 
-        public void RegisterUser(string name, string email, string password, int roleId)
+        public void RegisterUser(string name, string email, string password)
         {
             // Check if the user already exists
             var existingUser = _authRepo.GetUserByEmail(email);
@@ -37,7 +38,6 @@ namespace LogicLayer.Services
                 name = name,
                 email = email,
                 password = hashedPassword,
-                role = new Entities.Role { id = roleId }
             };
 
             // Save the new user to the database
@@ -72,7 +72,7 @@ namespace LogicLayer.Services
             {
                 new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, user.name),
                 new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Email, user.email),
-                new System.Security.Claims.Claim("role", user.role.name)
+                new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, user.role.name)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));  // Access configuration directly here
@@ -82,11 +82,29 @@ namespace LogicLayer.Services
                 issuer: _configuration["Jwt:Issuer"],  // Access configuration for issuer
                 audience: _configuration["Jwt:Audience"],  // Access configuration for audience
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(1), // Token expiration time (e.g., 1 hour)
+                expires: DateTime.Now.AddHours(1), // Token expiration time (e.g., 1 hour)
                 signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public static ClaimsPrincipal DecodeJwtToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            // Validate if the token is in a readable format
+            if (!tokenHandler.CanReadToken(token))
+            {
+                throw new ArgumentException("Invalid JWT token format.");
+            }
+
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+
+            // Extract claims
+            var claims = new ClaimsIdentity(jwtToken.Claims);
+
+            return new ClaimsPrincipal(claims);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace WorkCalendarV2.Controllers
         {
             try
             {
-                _authService.RegisterUser(request.name, request.email, request.password, request.roleId);
+                _authService.RegisterUser(request.name, request.email, request.password);
                 return new JsonResult("User registered successfully.");
             }
             catch (Exception ex)
@@ -32,6 +32,8 @@ namespace WorkCalendarV2.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
 
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
