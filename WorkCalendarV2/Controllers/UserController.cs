@@ -9,6 +9,7 @@ using WorkCalendarV2.Requests;
 using LogicLayer.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 
 namespace WorkCalendarV2.Controllers
@@ -66,10 +67,12 @@ namespace WorkCalendarV2.Controllers
         }
 
 
-        //[HttpPut("LinkUser")]
-        //public IActionResult LinkUserToEmployer(string loggedInUserId, string targetUserId) 
-        //{
-
-        //}
+        [HttpPut("LinkUser")]
+        [Authorize]
+        public IActionResult LinkUserToEmployer(LinkUserRequest request)
+        {
+            userService.LinkUser(request.LoggedInUserEmail, request.TargetUserEmail);
+            return new JsonResult("linked!!");
+        }
     }
 }
