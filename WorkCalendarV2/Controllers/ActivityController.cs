@@ -21,8 +21,6 @@ namespace WorkCalendarV2.Controllers
 
         private readonly ILogger<ActivityController> _logger;
 
-
-
         public ActivityController(ILogger<ActivityController> logger)
         {
             _logger = logger;

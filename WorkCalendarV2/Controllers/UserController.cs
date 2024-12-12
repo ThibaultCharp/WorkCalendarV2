@@ -17,7 +17,6 @@ namespace WorkCalendarV2.Controllers
     [Route("api/[controller]")]
     [ApiController]
 
-
     public class UserController : ControllerBase
     {
         private readonly UserService userService;
@@ -32,6 +31,7 @@ namespace WorkCalendarV2.Controllers
         }
 
         [HttpPost("CreateUser")]
+        [Authorize]
         public IActionResult CreateUser([FromBody] User user)
         {
             userService.CreateUserIfNotExisting(user);
@@ -39,30 +39,34 @@ namespace WorkCalendarV2.Controllers
         }
 
         [HttpGet("GetAllAvailableUsers")]
-        public IActionResult GetAllAvailableUsers()
+        [Authorize]
+        public IActionResult GetAllAvailableUsers([FromQuery] string Input)
         {
-            List<User> users = userService.GetAllUsersWithoutEmployer();
+            List<User> users = userService.GetAllUsersWithoutEmployer(Input);
             return new JsonResult(users);
         }
 
-
+        [HttpGet("GetAllUsers")]
+        [Authorize]
+        public IActionResult GetAllUsersWithCorrespondingRole([FromQuery] string Input) 
+        {
+            List<User> users = userService.GetAllUsersWithCorrespondingRole(Input);
+            return new JsonResult(users);
+        }
 
         [HttpGet("GetCurrentUser")]
         [Authorize]
         public IActionResult GetCurrentUser()
         {
-            // Extract claims from the token
             var email = User.Claims.FirstOrDefault(a => a.Type == ClaimTypes.Email)?.Value;
             var name = User.Claims.FirstOrDefault(b => b.Type == ClaimTypes.Name)?.Value;
             var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 
-            // Check if email is present (basic validation)
             if (string.IsNullOrEmpty(email))
             {
                 return Unauthorized("Email not found in token.");
             }
 
-            // Return the extracted information
             return Ok(new { name, email, role });
         }
 
@@ -73,6 +77,14 @@ namespace WorkCalendarV2.Controllers
         {
             userService.LinkUser(request.LoggedInUserEmail, request.TargetUserEmail);
             return new JsonResult("linked!!");
+        }
+
+        [HttpPut("ChangeUserRole")]
+        [Authorize]
+        public IActionResult ChangeUserRole(ChangeUserRoleRequest request) 
+        {
+            userService.ChangeUserRole(request.email, request.roleId);
+            return new JsonResult("success!!");
         }
     }
 }

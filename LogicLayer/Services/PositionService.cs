@@ -17,9 +17,14 @@ namespace LogicLayer.Services
             repository = positionRepo;
         }
 
-        public List<Position> GetAllActivitiesPerEmployee()
+        public List<Position> GetAllPositions()
         {
             return repository.GetAllPositions();
+        }
+
+        public List<LogicLayer.Entities.Role> GetAllRoles()
+        {
+            return repository.GetAllRoles();
         }
     }
 }

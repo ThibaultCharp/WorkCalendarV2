@@ -24,14 +24,24 @@ namespace LogicLayer.Classes
             }
         }
 
-        public List<User> GetAllUsersWithoutEmployer()
+        public List<User> GetAllUsersWithoutEmployer(string Input)
         {
-            return repository.GetAllEmployeesWithoutEmployer();
+            return repository.GetAllEmployeesWithoutEmployer(Input);
         }
 
-        public void LinkUser (string loggedInUserId, string targetUserId)
+        public List<User> GetAllUsersWithCorrespondingRole(string Input) 
         {
+            return repository.GetAllUsersWithCorrespondingRoles(Input);
+        }
 
+        public void LinkUser (string LoggedInUserEmail, string TargetUserEmail)
+        {
+            repository.LinkUser(LoggedInUserEmail, TargetUserEmail);
+        }
+
+        public void ChangeUserRole(string email, int userId)
+        {
+            repository.ChangeUserRole(email, userId);
         }
     }
 }

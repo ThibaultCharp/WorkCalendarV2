@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using LogicLayer.Entities;
 using LogicLayer.Entitys;
 using LogicLayer.IRepos;
 using MySql.Data.MySqlClient;
@@ -54,5 +55,45 @@ namespace DAL.Repos
 
             return posititions;
         }
+
+        public List<Role> GetAllRoles()
+        {
+            List<Role> roles = new List<Role>();
+
+            string query = "SELECT * FROM roles";
+
+            try
+            {
+                if (dbConnection.OpenConnection())
+                {
+                    using (var command = new MySqlCommand(query, dbConnection.connection))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Role role = new Role();
+                                role.id = Convert.ToInt32(reader["id"]);
+                                role.name = reader["name"].ToString();
+
+                                roles.Add(role);
+                            }
+                        }
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex.Message);
+            }
+            finally
+            {
+                dbConnection.CloseConnection();
+            }
+
+            return roles;
+        }
+
     }
 }

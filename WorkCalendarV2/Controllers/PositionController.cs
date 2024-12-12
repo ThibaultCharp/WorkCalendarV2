@@ -25,8 +25,15 @@ namespace WorkCalendarV2.Controllers
         [HttpGet("GetAllPositions")]
         public IActionResult GetAllPositions() 
         {
-            List<Position> positions = positionService.GetAllActivitiesPerEmployee();
+            List<Position> positions = positionService.GetAllPositions();
             return new JsonResult(positions);
+        }
+
+        [HttpGet("GetAllRoles")]
+        public IActionResult GetAllRoles()
+        {
+            List<LogicLayer.Entities.Role> roles = positionService.GetAllRoles();
+            return new JsonResult(roles);
         }
 
     }

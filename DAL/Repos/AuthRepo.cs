@@ -49,7 +49,7 @@ namespace DAL.Repos
         {
             string userQuery = @"
                 INSERT INTO Users (name, email, password, role_Id)
-                VALUES (@Name, @Email, @Password, 3)";
+                VALUES (@Name, @Email, @Password, 4)";
             string employeeQuery = @"
                 INSERT INTO Employees (user_id)
                 VALUES ((SELECT id FROM Users WHERE email = @Email))";
