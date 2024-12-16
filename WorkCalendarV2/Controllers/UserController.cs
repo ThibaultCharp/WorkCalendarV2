@@ -67,7 +67,7 @@ namespace WorkCalendarV2.Controllers
                 return Unauthorized("Email not found in token.");
             }
 
-            return Ok(new { name, email, role });
+            return Ok(new { name, email, role});
         }
 
 
@@ -83,7 +83,7 @@ namespace WorkCalendarV2.Controllers
         [Authorize]
         public IActionResult ChangeUserRole(ChangeUserRoleRequest request) 
         {
-            userService.ChangeUserRole(request.email, request.roleId);
+            userService.ChangeUserRole(request.email, request.roleId, false);
             return new JsonResult("success!!");
         }
     }

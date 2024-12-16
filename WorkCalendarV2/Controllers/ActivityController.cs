@@ -8,6 +8,8 @@ using LogicLayer.Entitys;
 using WorkCalendarV2.Requests;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using LogicLayer.Entities;
+using System.Xml.Linq;
 
 
 namespace WorkCalendarV2.Controllers
@@ -38,7 +40,7 @@ namespace WorkCalendarV2.Controllers
             {
                 return Unauthorized("Email not found in token.");
             }
-            List<LogicLayer.Entitys.Activity> activities = activityService.GetActivitiesByEmail(email);
+            List<LogicLayer.Entitys.Activity> activities = activityService.GetActivitiesByUserEmail(email, role);
             return new JsonResult(new { activities, name, role });
         }
 
@@ -53,7 +55,7 @@ namespace WorkCalendarV2.Controllers
 
 
         [HttpPut("UpdateActivity")]
-        public ActionResult UpdateActivity(int id, [FromBody] UpdateActivityRequest request)
+        public ActionResult UpdateActivity([FromBody] UpdateActivityRequest request)
         {
             if (request == null)
             {
@@ -63,7 +65,7 @@ namespace WorkCalendarV2.Controllers
             try
             {
                 activityService.UpdateActivity(
-                    id, 
+                    request.ActivityId,
                     request.position, 
                     request.begintime, 
                     request.endtime, 

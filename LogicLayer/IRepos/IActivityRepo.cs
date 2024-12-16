@@ -10,6 +10,7 @@ namespace LogicLayer.IRepos
     public interface IActivityRepo
     {
         List<Activity> GetActivitiesByUserEmail(string email);
+        List<Activity> GetActivitiesByEmployerEmail(string email);
         void CreateActivity(int position_id, string begintime, string endtime, string date, int employee_id);
         void UpdateActivity(int id, string position, string begintime, string endtime, string date, string employer_name, string employer_email);
     }

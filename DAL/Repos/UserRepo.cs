@@ -62,7 +62,7 @@ namespace DAL.Repos
         }
 
 
-        public void ChangeUserRole(string email, int roleId)
+        public void ChangeUserRole(string email, int roleId, bool makeEmployer)
         {
             string query = "UPDATE users SET role_id = @RoleId WHERE email = @Email";
 
@@ -76,6 +76,18 @@ namespace DAL.Repos
                         command.Parameters.AddWithValue("@RoleId", roleId);
 
                         command.ExecuteNonQuery();
+                    }
+
+                    if (makeEmployer)
+                    {
+                        string employerQuery = "INSERT INTO employers (user_id) SELECT id FROM users WHERE email = @Email";
+
+                        using (var employerCommand = new MySqlCommand(employerQuery, dbConnection.connection))
+                        {
+                            employerCommand.Parameters.AddWithValue("@Email", email);
+
+                            employerCommand.ExecuteNonQuery();
+                        }
                     }
                 }
             }

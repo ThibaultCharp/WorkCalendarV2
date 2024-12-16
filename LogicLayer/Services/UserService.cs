@@ -39,9 +39,13 @@ namespace LogicLayer.Classes
             repository.LinkUser(LoggedInUserEmail, TargetUserEmail);
         }
 
-        public void ChangeUserRole(string email, int userId)
+        public void ChangeUserRole(string email, int userId, bool makeEmployer)
         {
-            repository.ChangeUserRole(email, userId);
+            if(userId == 2)
+            {
+                makeEmployer = true;
+            }
+            repository.ChangeUserRole(email, userId, makeEmployer);
         }
     }
 }

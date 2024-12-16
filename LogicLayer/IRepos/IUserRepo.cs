@@ -10,7 +10,7 @@ namespace LogicLayer.IRepos
     public interface IUserRepo
     {
         void LinkUser(string LoggedInUserEmail, string TargetUserEmail);
-        void ChangeUserRole(string email, int roleId);
+        void ChangeUserRole(string email, int roleId, bool makeEmployer);
         bool UserExists(int userId);
         void CreateUser(User user);
         List<User> GetAllEmployeesWithoutEmployer(string Input);

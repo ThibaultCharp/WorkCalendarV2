@@ -17,9 +17,16 @@ namespace LogicLayer.Classes
             repository = activityRepo;
         }
 
-        public List<Activity> GetActivitiesByEmail(string email)
+        public List<Activity> GetActivitiesByUserEmail(string email, string role)
         {
-            return repository.GetActivitiesByUserEmail(email);
+            if (role == "Employer")
+            {
+                return repository.GetActivitiesByEmployerEmail(email);
+            }
+            else
+            {
+                return repository.GetActivitiesByUserEmail(email);
+            }
         }
 
         public void CreateActivity (int position_id, string begintime, string endtime, string date, int employee_id) 

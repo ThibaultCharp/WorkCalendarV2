@@ -4,12 +4,13 @@ using System.Linq;
 using LogicLayer.Entitys;
 using LogicLayer.IRepos;
 
-namespace LogicLayer.Tests
+namespace TestUnit.FakeRepos
 {
     public class FakeActivityRepo : IActivityRepo
     {
         private readonly List<Activity> _activities = new List<Activity>();
         private int _nextId = 1;
+
         public FakeActivityRepo()
         {
             // Dummy data
@@ -29,11 +30,15 @@ namespace LogicLayer.Tests
             });
         }
 
-        public List<Activity> GetActivitiesByUserEmail(string userId)
+        public List<Activity> GetActivitiesByUserEmail(string email)
         {
-            return _activities;
+            return _activities.Where(a => a.employee.user.email == email).ToList();
         }
 
+        public List<Activity> GetActivitiesByEmployerEmail(string email)
+        {
+            return _activities.Where(a => a.employee.employer.user.email == email).ToList();
+        }
 
         public void CreateActivity(int position_id, string begintime, string endtime, string date, int employee_id)
         {
@@ -43,10 +48,19 @@ namespace LogicLayer.Tests
                 begintime = TimeOnly.Parse(begintime),
                 endtime = TimeOnly.Parse(endtime),
                 date = DateTime.Parse(date),
-                employee = new Employee { id = employee_id }, // Simplified for demo
-                position = new Position { id = position_id } // Simplified for demo
+                employee = new Employee
+                {
+                    id = employee_id,
+                    user = new User { id = employee_id, name = $"Employee {employee_id}", email = $"employee{employee_id}@example.com" }
+                },
+                position = new Position
+                {
+                    id = position_id,
+                    name = $"Position {position_id}"
+                }
             });
         }
+
 
         public void UpdateActivity(int id, string position, string begintime, string endtime, string date, string employer_name, string employer_email)
         {
@@ -57,8 +71,11 @@ namespace LogicLayer.Tests
                 activity.begintime = TimeOnly.Parse(begintime);
                 activity.endtime = TimeOnly.Parse(endtime);
                 activity.date = DateTime.Parse(date);
-                activity.employee.employer.user.name = employer_name;
-                activity.employee.employer.user.email = employer_email;
+                if (activity.employee?.employer?.user != null)
+                {
+                    activity.employee.employer.user.name = employer_name;
+                    activity.employee.employer.user.email = employer_email;
+                }
             }
         }
     }

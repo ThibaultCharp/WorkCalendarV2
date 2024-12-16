@@ -72,7 +72,7 @@ namespace LogicLayer.Services
             {
                 new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, user.name),
                 new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Email, user.email),
-                new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, user.role.name)
+                new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, user.role.name),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));  // Access configuration directly here
@@ -89,22 +89,5 @@ namespace LogicLayer.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public static ClaimsPrincipal DecodeJwtToken(string token)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            // Validate if the token is in a readable format
-            if (!tokenHandler.CanReadToken(token))
-            {
-                throw new ArgumentException("Invalid JWT token format.");
-            }
-
-            var jwtToken = tokenHandler.ReadJwtToken(token);
-
-            // Extract claims
-            var claims = new ClaimsIdentity(jwtToken.Claims);
-
-            return new ClaimsPrincipal(claims);
-        }
     }
 }

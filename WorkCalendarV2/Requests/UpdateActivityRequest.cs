@@ -4,6 +4,7 @@ namespace WorkCalendarV2.Requests
 {
     public class UpdateActivityRequest
     {
+        public int ActivityId { get; set; }
         public string position { get; set; }
         public string begintime { get; set; }
         public string endtime { get; set; }
