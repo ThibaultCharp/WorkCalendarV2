@@ -45,9 +45,9 @@ namespace DAL.Repos
             }
         }
 
-        public void UpdateActivity(int id, string position, string begintime, string endtime, string date, string employer_name, string employer_email)
+        public void UpdateActivity(int id, int position_id, string begintime, string endtime, string date)
         {
-            string query =  "UPDATE `activities` SET `title` = @title, `begintime` = @begintime, `endtime` = @endtime, `date` = @date WHERE `id` = @id;";
+            string query =  "UPDATE `activities` SET `position_id` = @title, `begintime` = @begintime, `endtime` = @endtime, `date` = @date WHERE `id` = @id;";
 
             try
             {
@@ -56,7 +56,7 @@ namespace DAL.Repos
                     using (var command = new MySqlCommand(query, dbConnection.connection))
                     {
                         // Bind parameters to avoid SQL injection
-                        command.Parameters.AddWithValue("@title", position);
+                        command.Parameters.AddWithValue("@title", position_id);
                         command.Parameters.AddWithValue("@begintime", begintime);
                         command.Parameters.AddWithValue("@endtime", endtime);
                         command.Parameters.AddWithValue("@date", date);

@@ -66,12 +66,10 @@ namespace WorkCalendarV2.Controllers
             {
                 activityService.UpdateActivity(
                     request.ActivityId,
-                    request.position, 
+                    request.position_id, 
                     request.begintime, 
                     request.endtime, 
-                    request.date,
-                    request.employer_name,
-                    request.employer_email
+                    request.date
                 );
                 
                 return Ok("Activity updated successfully.");
