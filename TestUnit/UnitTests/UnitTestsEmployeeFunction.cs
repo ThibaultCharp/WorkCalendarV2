@@ -4,64 +4,87 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestUnit.FakeRepos;
 using LogicLayer.Entitys;
+using Moq;
+using LogicLayer.Classes;
+using LogicLayer.IRepos;
+
 
 namespace TestUnit.UnitTests
 {
     [TestClass]
     public class UnitTestsEmployeeFunction
     {
-        private FakeEmployeeRepo _fakeRepo;
+        private EmployeeService _employeeService;
+        private Mock<IEmployeeRepo> _moqEmployeeRepo;
+
 
         [TestInitialize]
         public void Setup()
         {
-            _fakeRepo = new FakeEmployeeRepo();
+            _moqEmployeeRepo = new Mock<IEmployeeRepo>();
+            _employeeService = new EmployeeService(_moqEmployeeRepo.Object);
         }
 
+
+
         [TestMethod]
-        public void GetAllemployeesPerEmployer_ReturnsCorrectEmployees()
+        public void GetAllEmployeesPerEmployer_ReturnsCorrectEmployees()
         {
             // Arrange
-            string employerEmail = "employer1@example.com";
+            string testEmployerEmail = "employer@example.com";
+
+            var expectedEmployees = new List<Employee>
+    {
+        new Employee
+        {
+            id = 1,
+            user = new User { id = 1, name = "Alice", email = "alice@example.com" },
+            employer = new Employer { id = 1, user = new User { id = 101, email = testEmployerEmail } }
+        },
+        new Employee
+        {
+            id = 2,
+            user = new User { id = 2, name = "Bob", email = "bob@example.com" },
+            employer = new Employer { id = 1, user = new User { id = 101, email = testEmployerEmail } }
+        }
+    };
+
+            _moqEmployeeRepo
+                .Setup(repo => repo.GetAllemployeesPerEmployer(testEmployerEmail))
+                .Returns(expectedEmployees);
 
             // Act
-            var employees = _fakeRepo.GetAllemployeesPerEmployer(employerEmail);
+            var result = _employeeService.GetAllEmployeesPerEmployer(testEmployerEmail);
 
             // Assert
-            Assert.AreEqual(2, employees.Count);
-            Assert.IsTrue(employees.All(e => e.employer.user.email == employerEmail));
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expectedEmployees.Count, result.Count);
+            Assert.AreEqual(expectedEmployees[0].user.name, result[0].user.name);
+            Assert.AreEqual(expectedEmployees[1].user.email, result[1].user.email);
+
+            _moqEmployeeRepo.Verify(repo => repo.GetAllemployeesPerEmployer(testEmployerEmail), Times.Once);
         }
 
-        [TestMethod]
-        public void GetAllemployeesPerEmployer_ReturnsEmptyListForUnknownEmail()
-        {
-            // Arrange
-            string employerEmail = "unknown@example.com";
-
-            // Act
-            var employees = _fakeRepo.GetAllemployeesPerEmployer(employerEmail);
-
-            // Assert
-            Assert.AreEqual(0, employees.Count);
-        }
 
         [TestMethod]
-        public void GetAllemployeesPerEmployer_ReturnsCorrectEmployeeDetails()
+        public void GetAllEmployeesPerEmployer_ReturnsEmptyList_WhenNoEmployeesFound()
         {
             // Arrange
-            string employerEmail = "employer1@example.com";
+            string testEmployerEmail = "unknown@example.com";
+
+            _moqEmployeeRepo
+                .Setup(repo => repo.GetAllemployeesPerEmployer(testEmployerEmail))
+                .Returns(new List<Employee>());
 
             // Act
-            var employees = _fakeRepo.GetAllemployeesPerEmployer(employerEmail);
-            var firstEmployee = employees.First();
+            var result = _employeeService.GetAllEmployeesPerEmployer(testEmployerEmail);
 
             // Assert
-            Assert.AreEqual(1, firstEmployee.id);
-            Assert.AreEqual("John Doe", firstEmployee.user.name);
-            Assert.AreEqual("john.doe@example.com", firstEmployee.user.email);
-            Assert.AreEqual("Employer1", firstEmployee.employer.user.name);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result.Count);
+
+            _moqEmployeeRepo.Verify(repo => repo.GetAllemployeesPerEmployer(testEmployerEmail), Times.Once);
         }
     }
 }

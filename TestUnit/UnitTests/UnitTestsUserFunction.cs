@@ -1,126 +1,172 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestUnit.FakeRepos;
 using LogicLayer.Entitys;
 using LogicLayer.Entities;
+using LogicLayer.Classes;
+using LogicLayer.IRepos;
+using Moq;
 
 namespace TestUnit.UnitTests
 {
     [TestClass]
     public class UnitTestsUserFunction
     {
-        private FakeUserRepo _fakeRepo;
+        private UserService _userService;
+        private Mock<IUserRepo> _moqUserRepo;
 
         [TestInitialize]
         public void Setup()
         {
-            _fakeRepo = new FakeUserRepo();
+            _moqUserRepo = new Mock<IUserRepo>();
+            _userService = new UserService(_moqUserRepo.Object);
         }
 
+
+
         [TestMethod]
-        public void LinkUser_AssignsEmployeeToEmployer()
+        public void CreateUserIfNotExisting_CreatesUser_WhenUserDoesNotExist()
         {
             // Arrange
-            string employerEmail = "charlie@example.com";
-            string employeeEmail = "bob@example.com";
+            var testUser = new User
+            {
+                id = 1,
+                name = "Test User",
+                email = "test@example.com",
+                role = new Role { id = 1, name = "Employee" }
+            };
+
+            _moqUserRepo.Setup(repo => repo.UserExists(testUser.id)).Returns(false);
 
             // Act
-            _fakeRepo.LinkUser(employerEmail, employeeEmail);
+            _userService.CreateUserIfNotExisting(testUser);
 
             // Assert
-            var updatedEmployee = _fakeRepo.GetAllUsersWithCorrespondingRoles("bob@example.com")[0];
-            Assert.AreEqual("Employee under Employer", updatedEmployee.role.name);
+            _moqUserRepo.Verify(repo => repo.CreateUser(testUser), Times.Once);
         }
 
+
+
+
         [TestMethod]
-        public void ChangeUserRole_UpdatesUserRoleToEmployer()
+        public void CreateUserIfNotExisting_DoesNotCreateUser_WhenUserExists()
         {
             // Arrange
-            string email = "bob@example.com";
-            int newRoleId = 3;
+            var testUser = new User
+            {
+                id = 1,
+                name = "Test User",
+                email = "test@example.com",
+                role = new Role { id = 1, name = "Employee" }
+            };
+
+            _moqUserRepo.Setup(repo => repo.UserExists(testUser.id)).Returns(true);
+
+            // Act
+            _userService.CreateUserIfNotExisting(testUser);
+
+            // Assert
+            _moqUserRepo.Verify(repo => repo.CreateUser(It.IsAny<User>()), Times.Never);
+        }
+
+
+
+
+        [TestMethod]
+        public void GetAllUsersWithoutEmployer_ReturnsUsersWithoutEmployer()
+        {
+            // Arrange
+            string testInput = "test@example.com";
+            var expectedUsers = new List<User>
+    {
+        new User { id = 1, name = "Alice" },
+        new User { id = 2, name = "Bob" }
+    };
+
+            _moqUserRepo.Setup(repo => repo.GetAllEmployeesWithoutEmployer(testInput)).Returns(expectedUsers);
+
+            // Act
+            var result = _userService.GetAllUsersWithoutEmployer(testInput);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expectedUsers.Count, result.Count);
+            Assert.AreEqual(expectedUsers[0].name, result[0].name);
+        }
+
+
+
+        [TestMethod]
+        public void GetAllUsersWithCorrespondingRole_ReturnsUsersWithSpecificRole()
+        {
+            // Arrange
+            string testRole = "Employee";
+            var expectedUsers = new List<User>
+    {
+        new User { id = 1, name = "Alice", role = new Role { id = 1, name = "Employee" } },
+        new User { id = 2, name = "Bob", role = new Role { id = 1, name = "Employee" } }
+    };
+
+            _moqUserRepo.Setup(repo => repo.GetAllUsersWithCorrespondingRoles(testRole)).Returns(expectedUsers);
+
+            // Act
+            var result = _userService.GetAllUsersWithCorrespondingRole(testRole);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(expectedUsers.Count, result.Count);
+            Assert.AreEqual(expectedUsers[0].role.name, result[0].role.name);
+        }
+
+
+        [TestMethod]
+        public void LinkUser_LinksUsersSuccessfully()
+        {
+            // Arrange
+            string loggedInUserEmail = "admin@example.com";
+            string targetUserEmail = "user@example.com";
+
+            // Act
+            _userService.LinkUser(loggedInUserEmail, targetUserEmail);
+
+            // Assert
+            _moqUserRepo.Verify(repo => repo.LinkUser(loggedInUserEmail, targetUserEmail), Times.Once);
+        }
+
+
+
+        [TestMethod]
+        public void ChangeUserRole_ChangesRoleToEmployer_WhenMakeEmployerIsTrue()
+        {
+            // Arrange
+            string testEmail = "test@example.com";
+            int testUserId = 1;
             bool makeEmployer = true;
 
             // Act
-            _fakeRepo.ChangeUserRole(email, newRoleId, makeEmployer);
+            _userService.ChangeUserRole(testEmail, testUserId, makeEmployer);
 
             // Assert
-            var updatedUser = _fakeRepo.GetAllUsersWithCorrespondingRoles(email)[0];
-            Assert.AreEqual("Employer", updatedUser.role.name);
+            _moqUserRepo.Verify(repo => repo.ChangeUserRole(testEmail, testUserId, makeEmployer), Times.Once);
         }
+
 
         [TestMethod]
-        public void UserExists_ReturnsTrueForExistingUser()
+        public void ChangeUserRole_SetsMakeEmployerTrue_WhenUserIdIsTwo()
         {
             // Arrange
-            int userId = 1;
+            string testEmail = "test@example.com";
+            int testUserId = 2;
+            bool makeEmployer = false;
 
             // Act
-            bool exists = _fakeRepo.UserExists(userId);
+            _userService.ChangeUserRole(testEmail, testUserId, makeEmployer);
 
             // Assert
-            Assert.IsTrue(exists);
+            _moqUserRepo.Verify(repo => repo.ChangeUserRole(testEmail, testUserId, true), Times.Once);
         }
 
-        [TestMethod]
-        public void UserExists_ReturnsFalseForNonExistentUser()
-        {
-            // Arrange
-            int userId = 999;
 
-            // Act
-            bool exists = _fakeRepo.UserExists(userId);
 
-            // Assert
-            Assert.IsFalse(exists);
-        }
-
-        [TestMethod]
-        public void CreateUser_AddsNewUserToRepo()
-        {
-            // Arrange
-            var newUser = new User
-            {
-                id = 4,
-                name = "David",
-                email = "david@example.com",
-                role = new Role { id = 2, name = "Employee" }
-            };
-
-            // Act
-            _fakeRepo.CreateUser(newUser);
-
-            // Assert
-            var createdUser = _fakeRepo.GetAllUsersWithCorrespondingRoles("david@example.com")[0];
-            Assert.AreEqual("David", createdUser.name);
-        }
-
-        [TestMethod]
-        public void GetAllEmployeesWithoutEmployer_ReturnsCorrectUsers()
-        {
-            // Arrange
-            string input = "bob";
-
-            // Act
-            var employees = _fakeRepo.GetAllEmployeesWithoutEmployer(input);
-
-            // Assert
-            Assert.AreEqual(1, employees.Count);
-            Assert.AreEqual("Bob", employees[0].name);
-        }
-
-        [TestMethod]
-        public void GetAllUsersWithCorrespondingRoles_FiltersCorrectly()
-        {
-            // Arrange
-            string input = "Admin";
-
-            // Act
-            var users = _fakeRepo.GetAllUsersWithCorrespondingRoles(input);
-
-            // Assert
-            Assert.AreEqual(1, users.Count);
-            Assert.AreEqual("Alice", users[0].name);
-        }
     }
 }
